@@ -1,12 +1,10 @@
 const express = require('express');
 const mongoose = require('../connectDB');
 const app = express.Router();
-const login = require("../models/login");
 const bcrypt = require('bcrypt');
 
-app.get("/hello2", (req, res) => {
-    res.send("hhhiiiiii222222222222");
-});
+const login = require("../models/login");
+const checkSignup=require("../models/checkSignup");
 
 app.post("/login", async (req, res) => {
    // const newlog = new login();
@@ -48,7 +46,7 @@ app.post("/login", async (req, res) => {
     }
 
 });
-
+///////////////// don't link this , it is for you just////////////////////////////////////
 app.post("/add",async(req,res)=>{
     const newlog=login();
     const password=req.body.password;
@@ -61,6 +59,16 @@ app.post("/add",async(req,res)=>{
     await newlog.save();
     res.json(newlog);
     
+});
+
+app.post("/checksignup",async(req,res)=>{
+    const id=req.body.id;
+    const r=await checkSignup.find({id:id}).exec();
+    if(r.length>0){
+        res.json(r);
+    }else{
+        res.send("not found");
+    }
 });
 
 module.exports = app;
