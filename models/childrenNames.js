@@ -3,7 +3,7 @@ const schema=mongoose.Schema;
 const chNamesSchema =new schema({
     Fname:String,
     Lname:String,
-    id:Object,
+    id:String,
     
 
 });
