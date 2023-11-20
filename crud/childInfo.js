@@ -10,6 +10,7 @@ const app = express.Router();
 const child = require("../models/childInfo");
 const chNames = require("../models/childrenNames");
 const ImageChild=require("../models/imageChild");
+const fileChild=require("../models/fileChild");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -40,7 +41,7 @@ app.post('/upload', upload.single('image'), async(req, res) => {
 
   // Save the new child information to the database
   const savedImage = await newImage.save();
-  res.status(201).json(savedImage);
+  res.status(200).json(savedImage);
   }
   catch(error){
     console.log(error);
@@ -72,6 +73,57 @@ app.get('/getImage/:id', async (req, res) => {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'file-' + uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+const fileStorageUpload = multer({
+  storage: fileStorage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only PDF files are allowed.'));
+    }
+  },
+});
+
+// Endpoint for file storage upload
+app.post('/uploadfile', fileStorageUpload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+    }
+    const childID = req.body.childID;
+
+    // Save the file storage details to MongoDB
+    const newFileStorage = new fileChild({
+      filename: req.file.filename,
+      path: req.file.path,
+      childID:childID
+    });
+
+    const savedFileStorage = await newFileStorage.save();
+
+    res.status(200).json(savedFileStorage);
+  } catch (error) {
+    console.error('Error uploading file storage:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// Serve uploaded files statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 app.post("/addChildInfo",async(req,res)=>{
     try {
 
@@ -88,6 +140,12 @@ app.post("/addChildInfo",async(req,res)=>{
         }));
       };
         // Create a new child instance with the provided data
+        //console .log(req.body.sessions);
+        //const sessions = Array.isArray(req.body.sessions) ? req.body.sessions : [];
+        //console.log(req.body);
+        //Array(req.body.sessions);
+        const sessions = JSON.parse(req.body.sessions);
+
         const newChild = new child({
           firstName: req.body.fname,
           secondName:req.body.secname,
@@ -101,7 +159,7 @@ app.post("/addChildInfo",async(req,res)=>{
           motherPhone: req.body.motherPhone,
           address: req.body.address,
           diagnosis: req.body.diagnosis,
-          sessions:formatSessionData(req.body.sessions),
+          sessions:formatSessionData((sessions)),
         });
     
         // Save the new child information to the database
