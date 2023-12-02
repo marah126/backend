@@ -6,6 +6,7 @@ const sessionSchema =new schema({
     specialest:String,
     session:String,
     date:Date,
+    endMonth:Date,
     day:String
 
 });

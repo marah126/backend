@@ -23,7 +23,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Endpoint for uploading images
 app.post('/upload', upload.single('image'), async(req, res) => {
   try{
   if (!req.file) {
@@ -53,7 +52,6 @@ const uploadsDirectory = path.join(__dirname, '..', 'uploads');
 
 app.use('/images', express.static(uploadsDirectory));
 
-// Endpoint to retrieve an image by ID
 app.get('/getImage/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -94,7 +92,6 @@ const fileStorageUpload = multer({
   },
 });
 
-// Endpoint for file storage upload
 app.post('/uploadfile', fileStorageUpload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
@@ -102,7 +99,6 @@ app.post('/uploadfile', fileStorageUpload.single('file'), async (req, res) => {
     }
     const childID = req.body.childID;
 
-    // Save the file storage details to MongoDB
     const newFileStorage = new fileChild({
       filename: req.file.filename,
       path: req.file.path,
@@ -118,7 +114,6 @@ app.post('/uploadfile', fileStorageUpload.single('file'), async (req, res) => {
   }
 });
 
-// Serve uploaded files statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
@@ -192,7 +187,7 @@ app.get("/getChildInfoByID",async(req,res)=>{
   console.log(result);
 });
 
-app.delete("/delete",async(req,res)=>{
+app.delete("/deletechild",async(req,res)=>{
   id=req.body.id;
   const resp= await child.deleteMany({idd:id});
   res.json(resp);

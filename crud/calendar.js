@@ -8,7 +8,7 @@ const chNames = require("../models/childrenNames");
 const spNames = require("../models/specialestNames");
 const sessions =require("../models/session");
 
-// -------------- add child name---------------------------//
+// -------------- add child namen (now it is not used here) ---------------------------//
 app.post("/addchname",async(req,res)=>{
     try{
         const fname=req.body.fname;
@@ -42,7 +42,7 @@ app.get("/getchname",async(req,res)=>{
     
 });
 
-//--------------- add specialest name------------------//
+//--------------- add specialest name (now it is not used here )------------------//
 app.post("/addspname",async(req,res)=>{
     try{
         const fname=req.body.fname;
@@ -63,7 +63,7 @@ app.post("/addspname",async(req,res)=>{
 // ----------------get specialests names---------------//
 app.get("/getspname",async(req,res)=>{
     try{
-        const result= await spNames.find({},'Fname Lname');
+        const result= await spNames.find({});
         res.json(result);
         for(let i=0; i<result.length;i++){
             console.log(result[i].Fname+" "+result[i].Lname);
@@ -75,7 +75,7 @@ app.get("/getspname",async(req,res)=>{
     }
     
 });
-
+// -------------------- get all the sesssions fro calender(admin) ----------------------------
 app.get("/getallsessions",async(req,res)=>{
     try{
         const result=await sessions.find({});
@@ -89,7 +89,7 @@ app.get("/getallsessions",async(req,res)=>{
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
+// --------------------- add session from calender (admin) -------------------------
 app.post("/addsession",async(req,res)=>{
     try{
         const newSession=sessions();
@@ -98,6 +98,7 @@ app.post("/addsession",async(req,res)=>{
         newSession.specialest=req.body.specialest;
         newSession.session=req.body.session;
         newSession.date=req.body.date;
+        newSession.endMonth=req.body.endMonth;
         newSession.day=req.body.day;
 
         await newSession.save();
@@ -111,5 +112,57 @@ app.post("/addsession",async(req,res)=>{
     
     
 });
+// ------------ get the session of today fro admin ----------------------------------------
+app.get("/getTodaySessions",async(req,res)=>{
+    try{
+        const today = new Date();
+        const day=today.getDay();
+        const month =today.getMonth();
+        const year=today.getFullYear();
+        console.log(day);
+        console.log(month);
+        console.log(year);
+        const todaySessions= await sessions.find({
+            day: day,
+            date: {
+              $gte: new Date(year, month, 1), // Start of the target month
+              $lt: new Date(year, month + 1, 1), // Start of the next month
+            },
+          });
+        res.json(todaySessions);
+    }catch(error){
+        console.log(error);
+    }
+});
+
+app.delete("/deleteSessions",async(req,res)=>{
+    const todaySessions= await sessions.deleteMany();
+    res.json(todaySessions);
+});
+
+app.get("/getTODAYSessionsBySP",async(req,res)=>{
+    try{
+        const sp=req.query.sp;
+        const today = new Date();
+        const day=today.getDay();
+        const month =today.getMonth();
+        const year=today.getFullYear();
+        console.log(day);
+        console.log(month);
+        console.log(year);
+        const todaySessions= await sessions.find({
+            specialest:sp,
+            day: day,
+            date: {
+              $gte: new Date(year, month, 1), // Start of the target month
+              $lt: new Date(year, month + 1, 1), // Start of the next month
+            },
+          });
+        res.json(todaySessions);
+    }catch(error){
+        console.log(error);
+    }
+
+})
 
 module.exports = app;

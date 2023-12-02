@@ -3,8 +3,6 @@ const mongoose = require('../connectDB');
 const app = express.Router();
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
-
-
 const login = require("../models/login");
 const checkSignup=require("../models/checkSignup");
 const signup=require("../models/signup");
