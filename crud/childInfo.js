@@ -130,8 +130,10 @@ app.post("/addChildInfo",async(req,res)=>{
       // Format session data
       const formatSessionData = (sessions) => {
         return sessions.map(session => ({
+          specialest:session.specialest,
           sessionName: session.sessionName,
           no: session.sessionNo,
+          
         }));
       };
         // Create a new child instance with the provided data
@@ -139,7 +141,7 @@ app.post("/addChildInfo",async(req,res)=>{
         //const sessions = Array.isArray(req.body.sessions) ? req.body.sessions : [];
         //console.log(req.body);
         //Array(req.body.sessions);
-        const sessions = JSON.parse(req.body.sessions);
+        //const sessions = JSON.parse(req.body.sessions); //comment this when using postman
 
         const newChild = new child({
           firstName: req.body.fname,
@@ -154,7 +156,7 @@ app.post("/addChildInfo",async(req,res)=>{
           motherPhone: req.body.motherPhone,
           address: req.body.address,
           diagnosis: req.body.diagnosis,
-          sessions:formatSessionData((sessions)),
+          sessions:formatSessionData((req.body.sessions)), // use this when using postman  req.body.sessions
         });
     
         // Save the new child information to the database
@@ -185,6 +187,22 @@ app.get("/getChildInfoByID",async(req,res)=>{
   res.json(result);
   console.log("getChildInfoByID");
   console.log(result);
+});
+
+app.get("/getchildId",async(req,res)=>{
+  try{
+    const fname=req.query.fname;
+    const lname=req.query.lastName;
+    const result=await child.findOne({firstName:fname,lastName:lname},'idd');
+    if(result){
+     res.json(result);
+    }else{
+      console.log("nooo");
+    }
+  }
+  catch(error){
+    console.log(error);
+  }
 });
 
 app.delete("/deletechild",async(req,res)=>{

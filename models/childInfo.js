@@ -15,6 +15,7 @@ const childInfSchema =new schema({
     diagnosis:String,
     sessions:[
         {
+            specialest:String,
             sessionName:String,
             no:Number
         }

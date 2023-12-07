@@ -144,5 +144,19 @@ const fileStorage = multer.diskStorage({
   app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
   
   
-
+  app.get("/getspId",async(req,res)=>{
+    try{
+      const fname=req.query.fname;
+      const lname=req.query.lastName;
+      const result=await specialest.findOne({firstName:fname,lastName:lname},'idd');
+      if(result){
+       res.json(result);
+      }else{
+        console.log("nooo");
+      }
+    }
+    catch(error){
+      console.log(error);
+    }
+  });
 module.exports = app;
