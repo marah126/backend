@@ -129,7 +129,23 @@ app.get("/getTodaySessions",async(req,res)=>{
               $lt: new Date(year, month + 1, 1), // Start of the next month
             },
           });
-        res.json(todaySessions);
+
+          const sortedSessions = todaySessions.sort((a, b) => {
+            const timeA = getTimePart(a.date);
+            const timeB = getTimePart(b.date);
+            return timeA.localeCompare(timeB);
+          });
+          console.log( todaySessions);
+         // res.json(todaySessions);
+
+          console.log(sortedSessions);
+          res.json(sortedSessions);
+        
+          function getTimePart(date) {
+            return date.toISOString().split('T')[1].substring(0, 5);
+          }
+
+
     }catch(error){
         console.log(error);
     }

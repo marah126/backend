@@ -5,6 +5,7 @@ const signupSchema =new schema({
     id:String,
     password:String,
     verified:Boolean,
+    type:String
 
 });
 const signup =mongoose.model("signup",signupSchema);

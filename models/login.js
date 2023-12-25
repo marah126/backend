@@ -3,7 +3,8 @@ const schema=mongoose.Schema;
 const loginSchema =new schema({
     email:String,
     cid:String,
-    password:String
+    password:String,
+    type:String
 
 });
 const login =mongoose.model("login",loginSchema);
