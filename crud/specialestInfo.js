@@ -13,7 +13,7 @@ app.get("/getSPInfoByID",async(req,res)=>{
   id=req.query.id;
   const result=await specialest.findOne({idd:id});
   res.json(result);
-  console.log("getChildInfoByID");
+  console.log("getSPInfoByID");
   console.log(result);
 });
 
@@ -48,7 +48,7 @@ const storage = multer.diskStorage({
   const upload = multer({ storage: storage });
   
   // Endpoint for uploading images
-  app.post('/uploadSP', upload.single('image'), async(req, res) => {
+  app.post('/uploadSP', upload.single('image'), async(req, res) => {// personal image
     try{
     if (!req.file) {
       return res.status(400).send('No file uploaded.');
@@ -60,7 +60,8 @@ const storage = multer.diskStorage({
     const newImage = new spImage({
       filename: req.file.originalname,
       path: req.file.path,
-      spID:spID
+      spID:spID,
+      type:"personal"
     });
   
     // Save the new Specialest information to the database
@@ -73,15 +74,42 @@ const storage = multer.diskStorage({
     
   });
   
+  app.post('/uploadJobimageSP', upload.single('image'), async(req, res) => {
+    try{
+    if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+    }
+    
+    // Save the image details to MongoDB
+    const spID = req.body.spID;
+  
+    const newImage = new spImage({
+      filename: req.file.originalname,
+      path: req.file.path,
+      spID:spID,
+      type:"job"
+    });
+  
+    // Save the new child information to the database
+    const savedImage = await newImage.save();
+    res.status(200).json(savedImage);
+    }
+    catch(error){
+      console.log(error);
+    }
+    
+  });
+
+
   const uploadsDirectory = path.join(__dirname, '..', 'uploads');
   
   app.use('/images', express.static(uploadsDirectory));
   
   // Endpoint to retrieve an image by ID
-  app.get('/getSPImage/:id', async (req, res) => {
+  app.get('/getSPImage', async (req, res) => { // get personal
     try {
-      const id = req.params.id;
-      const image = await spImage.findOne({'spID':id});
+      const id = req.query.id;
+      const image = await spImage.findOne({'spID':id, 'type': 'personal'});
       console.log(image);
       if (!image) {
         return res.status(404).json({ message: 'Image not found' });
@@ -94,7 +122,48 @@ const storage = multer.diskStorage({
     }
   });
 
+  app.get('/getJobImageSP', async (req, res) => {
+    try {
+      const id = req.query.id; // Use req.query.id to get the query parameter
+      const image = await spImage.findOne({ 'spID': id, 'type': 'job'});
+      console.log(image);
+      
+      if (!image) {
+        return res.status(404).json({ message: 'Image not found' });
+      }
+  
+      console.log(image.filename);
+      res.sendFile(path.join(uploadsDirectory, image.filename));
+      console.log(path.join(uploadsDirectory, image.filename));
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  });
+
+  app.get('/getAllSPImages', async (req, res) => {
+    try {
+      const images = await spImage.find({'type': 'personal'});
+  
+      if (!images || images.length === 0) {
+        return res.status(404).json({ message: 'Images not found' });
+      }
+  
+      // const imageDetails = images.map(image => ({
+      //   id: image.childID,
+      //   path: image.path.replace(/\\/g, '/'),
+      // }));
+  
+      res.status(200).json(images);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  });
+  
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////// Files //////////////////////////////////////////////////////////////////////////////////////////
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, 'uploads/');

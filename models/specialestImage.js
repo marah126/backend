@@ -3,6 +3,7 @@ const imageSPSchema = new mongoose.Schema({
     filename: String,
     path: String,
     spID:String,
+    type:String,
   });
   
   // Create the image model

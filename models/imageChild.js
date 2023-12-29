@@ -3,6 +3,7 @@ const imageChildSchema = new mongoose.Schema({
     filename: String,
     path: String,
     childID:String,
+    type:String
   });
   
   // Create the image model

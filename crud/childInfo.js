@@ -35,7 +35,8 @@ app.post('/upload', upload.single('image'), async(req, res) => {
   const newImage = new ImageChild({
     filename: req.file.originalname,
     path: req.file.path,
-    childID:childID
+    childID:childID,
+    type:"personal"
   });
 
   // Save the new child information to the database
@@ -48,26 +49,113 @@ app.post('/upload', upload.single('image'), async(req, res) => {
   
 });
 
+app.post('/uploadIDimageChild', upload.single('image'), async(req, res) => {
+  try{
+  if (!req.file) {
+    return res.status(400).send('No file uploaded.');
+  }
+  
+  // Save the image details to MongoDB
+  const childID = req.body.childID;
+
+  const newImage = new ImageChild({
+    filename: req.file.originalname,
+    path: req.file.path,
+    childID:childID,
+    type:"identity"
+  });
+
+  // Save the new child information to the database
+  const savedImage = await newImage.save();
+  res.status(200).json(savedImage);
+  }
+  catch(error){
+    console.log(error);
+  }
+  
+});
+
+
 const uploadsDirectory = path.join(__dirname, '..', 'uploads');
 
 app.use('/images', express.static(uploadsDirectory));
 
-app.get('/getImage/:id', async (req, res) => {
+app.get('/getImage', async (req, res) => {
   try {
-    const id = req.params.id;
-    const image = await ImageChild.findOne({'childID':id});
+    const id = req.query.id; // Use req.query.id to get the query parameter
+    const image = await ImageChild.findOne({ 'childID': id, 'type': 'personal'});
     console.log(image);
+    
     if (!image) {
       return res.status(404).json({ message: 'Image not found' });
     }
+
     console.log(image.filename);
     res.sendFile(path.join(uploadsDirectory, image.filename));
+    console.log(path.join(uploadsDirectory, image.filename));
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
+app.get('/getIDImageChild', async (req, res) => {
+  try {
+    const id = req.query.id; // Use req.query.id to get the query parameter
+    const image = await ImageChild.findOne({ 'childID': id, 'type': 'identity'});
+    console.log(image);
+    
+    if (!image) {
+      return res.status(404).json({ message: 'Image not found' });
+    }
+
+    console.log(image.filename);
+    res.sendFile(path.join(uploadsDirectory, image.filename));
+    console.log(path.join(uploadsDirectory, image.filename));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
+
+app.delete("/deleteImages",async(req,res)=>{
+  try {
+    // Use the signup model to delete all documents
+    const result = await ImageChild.deleteMany({});
+    
+    // Check if any documents were deleted
+    if (result.deletedCount > 0) {
+      res.status(200).json({ message: `${result.deletedCount} documents deleted from 'signup' collection.` });
+    } else {
+      res.status(404).json({ message: 'No documents found to delete.' });
+    }
+  } catch (error) {
+    console.error('Error deleting documents:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+
+app.get('/getAllImages', async (req, res) => {
+  try {
+    const images = await ImageChild.find({'type': 'personal'});
+
+    if (!images || images.length === 0) {
+      return res.status(404).json({ message: 'Images not found' });
+    }
+
+    const imageDetails = images.map(image => ({
+      id: image.childID,
+      path: image.path.replace(/\\/g, '/'),
+    }));
+
+    res.status(200).json(images);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

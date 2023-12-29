@@ -7,16 +7,35 @@ const nodemailer = require('nodemailer');
 const chNames = require("../models/childrenNames");
 const spNames = require("../models/specialestNames");
 const sessions =require("../models/session");
+const child=require("../models/childInfo");
+
+app.delete("/deleteChildrenNames",async(req,res)=>{
+    try {
+        // Use the signup model to delete all documents
+        const result = await spNames.deleteMany({});
+        
+        // Check if any documents were deleted
+        if (result.deletedCount > 0) {
+          res.status(200).json({ message: `${result.deletedCount} documents deleted from 'signup' collection.` });
+        } else {
+          res.status(404).json({ message: 'No documents found to delete.' });
+        }
+      } catch (error) {
+        console.error('Error deleting documents:', error);
+        res.status(500).json({ error: 'Internal server error.' });
+      }
+});
 
 // -------------- add child namen (now it is not used here) ---------------------------//
 app.post("/addchname",async(req,res)=>{
     try{
         const fname=req.body.fname;
         const lname=req.body.lname;
+        const id =req.body.id;
         const newChName=chNames();
         newChName.Fname=fname;
         newChName.Lname=lname;
-        newChName.id=null;
+        newChName.id=id;
         await newChName.save();
         res.json(newChName);
     }
@@ -30,10 +49,17 @@ app.post("/addchname",async(req,res)=>{
 app.get("/getchname",async(req,res)=>{
     try{
         const result= await chNames.find({});
-        res.json(result);
-        for(let i=0; i<result.length;i++){
-            console.log(result[i].Fname+" "+result[i].Lname);
+        if(result.length>0){
+            res.status(200).json(result);
+            for(let i=0; i<result.length;i++){
+                console.log(result[i].Fname+" "+result[i].Lname);
+            }
         }
+        else{
+            res.status(404).json({message:"no data"});
+            console.log("No data");
+        }
+        
     }
     catch(error){
         console.error('Error getting children names:', error);
@@ -47,10 +73,11 @@ app.post("/addspname",async(req,res)=>{
     try{
         const fname=req.body.fname;
         const lname=req.body.lname;
+        const id=req.body.id;
         const newspName=spNames();
         newspName.Fname=fname;
         newspName.Lname=lname;
-        newspName.id=null;
+        newspName.id=id;
         await newspName.save();
         res.json(newspName);
     }
