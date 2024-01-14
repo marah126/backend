@@ -1,8 +1,7 @@
 const express = require('express');
 const mongoose = require('../connectDB');
 const app = express.Router();
-const bcrypt = require('bcrypt');
-const nodemailer = require('nodemailer');
+
 
 const chNames = require("../models/childrenNames");
 const spNames = require("../models/specialestNames");
@@ -127,6 +126,8 @@ app.post("/addsession",async(req,res)=>{
         newSession.date=req.body.date;
         newSession.endMonth=req.body.endMonth;
         newSession.day=req.body.day;
+        newSession.childId="";
+        newSession.spId="";
 
         await newSession.save();
         res.json(newSession);

@@ -3,14 +3,13 @@ const mongoose = require('../connectDB');
 const multer = require('multer');
 const path = require('path');
 
-
 const app = express.Router();
-
 
 const child = require("../models/childInfo");
 const chNames = require("../models/childrenNames");
 const ImageChild=require("../models/imageChild");
 const fileChild=require("../models/fileChild");
+const checkSignup=require("../models/checkSignup");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -229,7 +228,7 @@ app.post("/addChildInfo",async(req,res)=>{
         //const sessions = Array.isArray(req.body.sessions) ? req.body.sessions : [];
         //console.log(req.body);
         //Array(req.body.sessions);
-        //const sessions = JSON.parse(req.body.sessions); //comment this when using postman
+        const sessions = JSON.parse(req.body.sessions); //comment this when using postman
 
         const newChild = new child({
           firstName: req.body.fname,
@@ -244,7 +243,7 @@ app.post("/addChildInfo",async(req,res)=>{
           motherPhone: req.body.motherPhone,
           address: req.body.address,
           diagnosis: req.body.diagnosis,
-          sessions:formatSessionData((req.body.sessions)), // use this when using postman  req.body.sessions
+          sessions:formatSessionData((sessions)), // use this when using postman  req.body.sessions
         });
     
         // Save the new child information to the database
@@ -259,7 +258,15 @@ app.post("/addChildInfo",async(req,res)=>{
         newChName.Lname=lname;
         newChName.id=req.body.id;
         await newChName.save();
-        console.log(newChName);
+        console.log("new child is added  "+newChName);
+
+        // ----------------add child to check Signup---------------------------//
+        const check=new checkSignup({
+          id:req.body.id,
+          type:"child"
+      });
+      const check2= await check.save();
+      console.log("added to check signup  "+check2);
     
         
       } catch (error) {

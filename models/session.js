@@ -7,7 +7,9 @@ const sessionSchema =new schema({
     session:String,
     date:Date,
     endMonth:Date,
-    day:String
+    day:String,
+    childId:String,
+    spId:String
 
 });
 const sessions =mongoose.model("session",sessionSchema);

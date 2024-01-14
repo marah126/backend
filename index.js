@@ -6,7 +6,8 @@ const route3=require('./crud/calendar.js');
 const route4=require('./crud/childInfo.js');
 const route5=require('./crud/specialestInfo.js');
 const route6=require('./crud/spOperations.js');
-
+const route7=require("./crud/vecations.js");
+const route8=require("./crud/parentsOperation.js");
 
 
 
@@ -21,6 +22,8 @@ app.use('/sanad',route3);
 app.use('/sanad',route4);
 app.use('/sanad',route5);
 app.use('/sanad',route6);
+app.use('/sanad',route7);
+app.use('/sanad',route8);
 
 
 module.exports=app;

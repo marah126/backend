@@ -6,7 +6,6 @@ const nodemailer = require('nodemailer');
 const login = require("../models/login");
 const checkSignup=require("../models/checkSignup");
 const signup=require("../models/signup");
-const verify=require("../models/verified");
 
 app.post("/login", async (req, res) => {
    // const newlog = new login();
@@ -29,7 +28,7 @@ app.post("/login", async (req, res) => {
                 console.log('Users found:', user);
                 let hashpass=user[0].password;
                 if (bcrypt.compareSync(password,hashpass)) {
-                    res.status(200).json({ type: user[0].type });
+                    res.status(200).json(user);
                 }
                 else {
         
@@ -68,6 +67,7 @@ app.post("/add",async(req,res)=>{
 app.post("/signup",async(req,res)=>{
     try{
         const newSignup=signup();
+        const email=req.body.email;
         const id=req.body.id;
         const password=req.body.password;
         const saltRounds=10;
@@ -93,14 +93,25 @@ app.post("/signup",async(req,res)=>{
                 res.status(501).json({ massage: "this id is exist in system! " });
             }
             else{
-                newSignup.id=req.body.id;
-                newSignup.email=req.body.email;
+                newSignup.id=id;
+                newSignup.email=email;
                 newSignup.password=hashpass;
                 newSignup.verified=false;
                 newSignup.type=type;
         
-                newSignup.save();
-                console.log("Done");
+                const savedSignup=await newSignup.save();
+                console.log("Done signup");
+                console.log(savedSignup);
+                const newlog=login({
+                    email:email,
+                    password:hashpass,
+                    cid:id,
+                    type:type
+                });
+                const savedLogin = await newlog.save();
+                console.log("Done login");
+                console.log(savedLogin);
+
                 res.status(200).json({ massage: "Done" });
             }         
         }else{

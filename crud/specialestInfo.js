@@ -8,7 +8,7 @@ const app = express.Router();
 const specialest=require("../models/specialestInfo");
 const spImage=require("../models/specialestImage");
 const spFile=require("../models/fileSpecialest");
-
+const checkSignup=require("../models/checkSignup");
 app.get("/getSPInfoByID",async(req,res)=>{
   id=req.query.id;
   const result=await specialest.findOne({idd:id});
@@ -31,7 +31,16 @@ app.post("/addSpecialestInfo",async(req,res)=>{
       });
 
       const savedSp = await newSp.save();
-      res.status(200).json(savedSp);
+      console.log("sp added "+savedSp);
+
+      const check=new checkSignup({
+        id:req.body.id,
+        type:"SP"
+    });
+    const check2= await check.save();
+    console.log("added to check signup  "+check2);
+
+    res.status(200).json(savedSp);
 });
 
 
@@ -213,19 +222,19 @@ const fileStorage = multer.diskStorage({
   app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
   
   
-  app.get("/getspId",async(req,res)=>{
-    try{
-      const fname=req.query.fname;
-      const lname=req.query.lastName;
-      const result=await specialest.findOne({firstName:fname,lastName:lname},'idd');
-      if(result){
-       res.json(result);
-      }else{
-        console.log("nooo");
-      }
-    }
-    catch(error){
-      console.log(error);
-    }
-  });
+  // app.get("/getspId",async(req,res)=>{
+  //   try{
+  //     const fname=req.query.fname;
+  //     const lname=req.query.lastName;
+  //     const result=await specialest.findOne({firstName:fname,lastName:lname},'idd');
+  //     if(result){
+  //      res.json(result);
+  //     }else{
+  //       console.log("nooo");
+  //     }
+  //   }
+  //   catch(error){
+  //     console.log(error);
+  //   }
+  // });
 module.exports = app;
