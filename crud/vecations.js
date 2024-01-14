@@ -38,6 +38,7 @@ app.get("/getVecations", async (req, res) => {
 
         const vecations = await vecation.find({
             id: employeeId,
+            status:'accepted',
             startDate:{
                 $gte: new Date(`${year}-01-01T00:00:00.000Z`),
                 $lt: new Date(`${year + 1}-01-01T00:00:00.000Z`)
@@ -98,6 +99,7 @@ app.get("/detailes",async(req,res)=>{
               $match: {
                 id,
                 type: 'مرضية',
+                status:'accepted',
                 startDate: {
                   $gte: new Date(`${year}-01-01T00:00:00.000Z`),
                   $lt: new Date(`${year + 1}-01-01T00:00:00.000Z`),
@@ -144,6 +146,7 @@ app.get("/detailes",async(req,res)=>{
               $match: {
                 id,
                 type: 'سنوية',
+                status:'accepted',
                 startDate: {
                   $gte: new Date(`${year}-01-01T00:00:00.000Z`),
                   $lt: new Date(`${year + 1}-01-01T00:00:00.000Z`),
@@ -189,6 +192,7 @@ app.get("/detailes",async(req,res)=>{
               $match: {
                 id,
                 type: 'سنوية',
+                status:'accepted',
                 startDate: {
                   $gte: new Date(`${year-1}-01-01T00:00:00.000Z`),
                   $lt: new Date(`${year}-01-01T00:00:00.000Z`),
@@ -235,6 +239,7 @@ app.get("/detailes",async(req,res)=>{
               $match: {
                 id,
                 type: 'سنوية',
+                status:'accepted',
                 startDate: {
                   $gte: new Date(`${year - 2}-01-01T00:00:00.000Z`),
                   $lt: new Date(`${year - 1}-01-01T00:00:00.000Z`),
