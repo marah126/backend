@@ -339,7 +339,44 @@ app.get("/detailes",async(req,res)=>{
         console.log(error);
     }
 });
-    
+
+const { format, parseISO } = require('date-fns');
+
+app.post("/updateStatus",async(req,res)=>{
+  try{
+    const newStatus=req.body.status;
+    const id=req.body.id;
+    const startDate=req.body.startDate;
+    const endDate=req.body.endDate;
+
+    const startDate2=new Date(startDate);
+    const endDate2=new Date(endDate);
+    console.log(startDate2.toISOString());
+    console.log(endDate2.toISOString());
+
+    console.log(newStatus);
+
+    const result = await vecations.updateOne(
+      { id: id, startDate: startDate2, endDate: endDate2 },
+      { $set: { status: newStatus } }
+    );
+
+    if (result.modifiedCount > 0) {
+      res.status(200).json({ message: 'Status updated successfully' });
+      console.log(result);
+    } else {
+      res.status(404).json({ message: 'Document not found or no modifications made' });
+      console.log(result);
+
+    }
+  }
+  catch(error){
+    res.status(500).json({ error: "Internal Server Error" });
+    console.log(error);
+  }
+});
+
+
 app.get("/test",async(req,res)=>{
     try {
         
