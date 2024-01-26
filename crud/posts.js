@@ -19,13 +19,21 @@ const storage = multer.diskStorage({
   
 app.post("/newPost",upload.single('image'),async(req,res)=>{
     try{
+      console.log("pooooooosst");
         const title=req.body.title;
         const text=req.body.text;
         const date=req.body.date;
         const time=req.body.time;
-        const filename= req.file.originalname;
-        const path= req.file.path;
-
+        let filename= "";
+        let path="";
+        if(req.file){
+           filename= req.file.originalname;
+           path= req.file.path;
+        }
+        else{
+           filename= "";
+           path="";
+        }
         const newPost=new post({
             'title':title,
             'text':text,

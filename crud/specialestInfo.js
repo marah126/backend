@@ -237,4 +237,43 @@ const fileStorage = multer.diskStorage({
   //     console.log(error);
   //   }
   // });
+
+
+  app.get("/filterSp",async(req,res)=>{
+    try{
+      const searchBy=req.query.searchBy;
+      const value=req.query.value;
+
+      if(searchBy=='sick'){
+        const result= await specialest.find({
+          specialise:value
+        },{ firstName: 1, lastName: 1, idd:1, _id: 0 });
+
+        if(result.length>0){
+          res.status(200).json(result);
+        }else{
+          res.status(404).json({message:"no data"});
+        }
+      }else if(searchBy=='year'){
+        
+        const year= parseInt(req.query.value, 10);
+        const result= await specialest.find({
+          startDate:{
+            $gte: new Date(`${year}-01-01T00:00:00.000Z`),
+            $lt: new Date(`${year + 1}-01-01T00:00:00.000Z`)
+        },
+        },{ firstName: 1, lastName: 1, idd:1, _id: 0 });
+
+        if(result.length>0){
+          res.status(200).json(result);
+        }else{
+          res.status(404).json({message:"no data"});
+        }
+      }
+
+    }catch(error){
+      console.error(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  });
 module.exports = app;

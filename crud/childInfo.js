@@ -306,5 +306,71 @@ app.delete("/deletechild",async(req,res)=>{
   res.json(resp);
 })
 
+app.get("/filterChildren",async(req,res)=>{
+  console.log("filter")
+  try{
+    const searchBy=req.query.searchBy;
+    const value=req.query.value;
 
+    if(searchBy=='enteredYear'){
+      const year= parseInt(req.query.value, 10);
+      console.log(year);
+      const result= await child.find({
+        enteryDate:{
+          $gte: new Date(`${year}-01-01T00:00:00.000Z`),
+          $lt: new Date(`${year + 1}-01-01T00:00:00.000Z`)
+      },
+      },{ firstName: 1, lastName: 1, idd:1, _id: 0 });
+      if(result.length>0){
+        res.status(200).json(result);
+      }
+      else{
+        res.status(404).json({message:"no data"});
+      }
+
+    }else if(searchBy=='birthYear'){
+      const year= parseInt(req.query.value, 10);
+      console.log(year);
+      const result= await child.find({
+        birthDate:{
+          $gte: new Date(`${year}-01-01T00:00:00.000Z`),
+          $lt: new Date(`${year + 1}-01-01T00:00:00.000Z`)
+      },
+    }, { firstName: 1, lastName: 1, idd:1, _id: 0 });
+
+      if(result.length>0){
+        res.status(200).json(result);
+      }
+      else{
+        res.status(404).json({message:"no data"});
+      }
+    }else if(searchBy=='sick'){
+      
+      const result= await child.find({
+        diagnosis:value
+      },{ firstName: 1, lastName: 1, idd:1, _id: 0 });
+
+      if(result.length>0){
+        res.status(200).json(result);
+      }
+      else{
+        res.status(404).json({message:"no data"});
+      }
+
+    }else if(searchBy=='session'){
+      const result= await child.find({
+        "sessions.sessionName":value
+      },{ firstName: 1, lastName: 1, idd:1, _id: 0 });
+      if(result.length>0){
+        res.status(200).json(result);
+      }
+      else{
+        res.status(404).json({message:"no data"});
+      }
+    }
+  }catch(error){
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 module.exports = app;

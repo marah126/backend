@@ -9,6 +9,7 @@ const route6=require('./crud/spOperations.js');
 const route7=require("./crud/vecations.js");
 const route8=require("./crud/parentsOperation.js");
 const route9=require("./crud/posts.js");
+const route10=require("./crud/objectives.js");
 
 
 
@@ -26,6 +27,7 @@ app.use('/sanad',route6);
 app.use('/sanad',route7);
 app.use('/sanad',route8);
 app.use('/sanad',route9);
+app.use('/sanad',route10);
 
 
 module.exports=app;
