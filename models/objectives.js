@@ -7,7 +7,12 @@ const objictivesSchema =new schema({
     subType:String,
     object:String,
     percent:String,
-    status:String
+    status:String,
+    // month:String,
+    // year:String,
+    // evalMonth:String,
+    // evalYear:String
+
 });
 const objective =mongoose.model("objective",objictivesSchema);
 module.exports=objective;

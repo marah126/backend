@@ -12,6 +12,8 @@ app.post("/newObject",async(req,res)=>{
         const subType=req.body.subType;
         const objectt=req.body.object;
         const percent=req.body.percent;
+        const month=req.body.month;
+        const year=req.body.year;
         
         const newObject= new object({
             childId:childID,
@@ -20,7 +22,9 @@ app.post("/newObject",async(req,res)=>{
             subType:subType,
             object:objectt,
             percent:percent,
-            status:"processing"
+            status:"processing",
+            // month:month,
+            // year:year
         });
 
         const savedObj= await newObject.save();
