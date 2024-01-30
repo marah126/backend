@@ -276,4 +276,15 @@ const fileStorage = multer.diskStorage({
       res.status(500).json({ message: "Internal Server Error" });
     }
   });
+
+  app.get("/getSpNameee",async(req,res)=>{
+    try{
+      const id = req.query.id;
+      const response=await specialest.findOne({idd:id},{firstName:1,lastName:1,_id: 0 });
+      console.log(response);
+      res.status(200).json(response);
+    }catch(error){
+
+    }
+  });
 module.exports = app;

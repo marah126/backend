@@ -217,7 +217,7 @@ app.post("/addChildInfo",async(req,res)=>{
       // Format session data
       const formatSessionData = (sessions) => {
         return sessions.map(session => ({
-          specialest:session.specialest,
+          //specialest:session.specialest,
           sessionName: session.sessionName,
           no: session.sessionNo,
           
@@ -345,10 +345,13 @@ app.get("/filterChildren",async(req,res)=>{
         res.status(404).json({message:"no data"});
       }
     }else if(searchBy=='sick'){
-      
+      console.log("sick");
+      console.log(value);
       const result= await child.find({
         diagnosis:value
-      },{ firstName: 1, lastName: 1, idd:1, _id: 0 });
+      },
+      // { firstName: 1, lastName: 1, idd:1, _id: 0 }
+      );
 
       if(result.length>0){
         res.status(200).json(result);

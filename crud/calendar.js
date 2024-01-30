@@ -187,6 +187,7 @@ app.delete("/deleteSessions",async(req,res)=>{
 app.get("/getTODAYSessionsBySP",async(req,res)=>{
     try{
         const sp=req.query.sp;
+        console.log(sp);
         const today = new Date();
         const day=today.getDay();
         const month =today.getMonth();
@@ -196,7 +197,7 @@ app.get("/getTODAYSessionsBySP",async(req,res)=>{
         console.log(year);
         const todaySessions= await sessions.find({
             specialest:sp,
-            day: day,
+            day: day-1,
             date: {
               $gte: new Date(year, month, 1), // Start of the target month
               $lt: new Date(year, month + 1, 1), // Start of the next month
