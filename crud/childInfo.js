@@ -376,4 +376,43 @@ app.get("/filterChildren",async(req,res)=>{
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+app.put("/updatePhone", async (req, res) => {
+  try {
+      const id = req.query.id;
+      const fatherPhone = req.body.fatherPhone;
+      const motherPhone=req.body.motherPhone;
+
+      // Update the document with the new email
+      const result = await child.updateOne({ cid: id }, { $set: { fatherPhone: fatherPhone,motherPhone:motherPhone } });
+      console.log(result);
+      if (result.modifiedCount > 0) {
+          res.status(200).json({ message: "phone updated successfully" });
+      } else {
+          res.status(404).json({ message: "Document not found or email is the same" });
+      }
+      
+  } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
+      console.log(error);
+  }
+});
+app.put("/updateEmailchild", async (req, res) => {
+  try {
+      const id = req.body.id;
+      const newEmail = req.body.newEmail;
+
+      // Update the document with the new email
+      const result = await login.updateOne({ cid: id }, { $set: { email: newEmail } });
+      console.log(result);
+      if (result.modifiedCount > 0) {
+          res.status(200).json({ message: "Email updated successfully" });
+      } else {
+          res.status(404).json({ message: "Document not found or email is the same" });
+      }
+      
+  } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
+      console.log(error);
+  }
+});
 module.exports = app;

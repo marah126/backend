@@ -197,7 +197,7 @@ app.get("/getTODAYSessionsBySP",async(req,res)=>{
         console.log(year);
         const todaySessions= await sessions.find({
             specialest:sp,
-            day: day-1,
+            day: day,
             date: {
               $gte: new Date(year, month, 1), // Start of the target month
               $lt: new Date(year, month + 1, 1), // Start of the next month
@@ -208,6 +208,41 @@ app.get("/getTODAYSessionsBySP",async(req,res)=>{
         console.log(error);
     }
 
+});
+app.get("/getTODAYSessionsBychild",async(req,res)=>{
+    try{
+        const child=req.query.child;
+        console.log(child);
+        // const today = new Date();
+        // const day=today.getDay();
+        // const month =today.getMonth();
+        // const year=today.getFullYear();
+        // console.log(day);
+        // console.log(month);
+        // console.log(year);
+
+
+        const today = new Date();
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay()); // Start of the current week (Sunday)
+        startOfWeek.setHours(0, 0, 0, 0);
+    
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 7); // End of the current week (Saturday)
+        endOfWeek.setHours(23, 59, 59, 999);
+
+
+        const todaySessions= await sessions.find({
+            child:child,
+            // day: day,
+            date: { $gte: startOfWeek, $lt: endOfWeek }
+          });
+        res.json(todaySessions);
+    }catch(error){
+        console.log(error);
+    }
+
 })
+
 
 module.exports = app;
