@@ -9,6 +9,8 @@ const specialest=require("../models/specialestInfo");
 const spImage=require("../models/specialestImage");
 const spFile=require("../models/fileSpecialest");
 const checkSignup=require("../models/checkSignup");
+const spname=require("../models/specialestNames");
+const spNames = require('../models/specialestNames');
 app.get("/getSPInfoByID",async(req,res)=>{
   id=req.query.id;
   const result=await specialest.findOne({idd:id});
@@ -40,6 +42,12 @@ app.post("/addSpecialestInfo",async(req,res)=>{
     const check2= await check.save();
     console.log("added to check signup  "+check2);
 
+    const newspName= new spNames({
+      Fname:firstName,
+      Lname:lastName,
+      id:idd
+    });
+    const savedName= await newspName.save();
     res.status(200).json(savedSp);
 });
 
@@ -285,6 +293,26 @@ const fileStorage = multer.diskStorage({
       res.status(200).json(response);
     }catch(error){
 
+    }
+  });
+
+  app.put("/updatePhonesp", async (req, res) => {
+    try {
+        const id = req.query.id;
+        const phone=req.body.phone;
+  
+        // Update the document with the new email
+        const result = await specialest.updateOne({ idd: id }, { $set: { phone:phone } });
+        console.log(result);
+        if (result.modifiedCount > 0) {
+            res.status(200).json({ message: "phone updated successfully" });
+        } else {
+            res.status(404).json({ message: "Document not found or email is the same" });
+        }
+        
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+        console.log(error);
     }
   });
 module.exports = app;

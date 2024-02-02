@@ -11,13 +11,14 @@ const login = require("../models/login");
 app.post("/addNotes",async(req,res)=>{
     try{
         newNote=note({
-            idd:req.body.id,
+            idd:req.body.cid,
             specialest:req.body.specialest,
             session:req.body.session,
             date:Date(),
             personalNotes:req.body.personalNotes,
             spNotes:req.body.spNotes,
             parentsNotes:req.body.parentsNotes,
+            attendance:req.body.attendance
         });
         const savedNote=await newNote.save();
         console.log(savedNote);
@@ -98,4 +99,43 @@ app.put("/updateEmail", async (req, res) => {
         console.log(error);
     }
 });
+
+app.get("/getmyNotes",async(req,res)=>{
+    try{
+        const spid= req.query.spid;
+        const cid=req.query.cid;
+        const notess=await note.find({idd:cid ,specialest:spid, attendance:'yes'});
+        res.status(200).json(notess);
+    }
+    catch(error){
+        res.status(500).json({ error: 'Internal Server Error' });
+        console.log(error);
+    }
+});
+
+app.get("/getotherNotes",async(req,res)=>{
+    try{
+        const spid= req.query.spid;
+        const cid=req.query.cid;
+        const notess=await note.find({idd:cid ,specialest:spid, attendance:'yes'});
+        res.status(200).json(notess);
+    }
+    catch(error){
+        res.status(500).json({ error: 'Internal Server Error' });
+        console.log(error);
+    }
+});
+
+app.get("/parentsNotes",async(req,res)=>{
+    try{
+        const cid=req.query.cid;
+        const result=await note.find({idd:cid});
+        res.status(200).json(result)
+
+    }catch(error){
+        res.status(500).json({ error: 'Internal Server Error' });
+        console.log(error);
+    }
+});
+
 module.exports = app;

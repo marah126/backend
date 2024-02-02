@@ -10,6 +10,8 @@ const chNames = require("../models/childrenNames");
 const ImageChild=require("../models/imageChild");
 const fileChild=require("../models/fileChild");
 const checkSignup=require("../models/checkSignup");
+const childInfo = require('../models/childInfo');
+const specialestInfo = require('../models/specialestInfo');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -383,7 +385,7 @@ app.put("/updatePhone", async (req, res) => {
       const motherPhone=req.body.motherPhone;
 
       // Update the document with the new email
-      const result = await child.updateOne({ cid: id }, { $set: { fatherPhone: fatherPhone,motherPhone:motherPhone } });
+      const result = await child.updateOne({ idd: id }, { $set: { fatherPhone: fatherPhone,motherPhone:motherPhone } });
       console.log(result);
       if (result.modifiedCount > 0) {
           res.status(200).json({ message: "phone updated successfully" });
@@ -396,6 +398,7 @@ app.put("/updatePhone", async (req, res) => {
       console.log(error);
   }
 });
+
 app.put("/updateEmailchild", async (req, res) => {
   try {
       const id = req.body.id;
@@ -413,6 +416,36 @@ app.put("/updateEmailchild", async (req, res) => {
   } catch (error) {
       res.status(500).json({ error: 'Internal Server Error' });
       console.log(error);
+  }
+});
+
+app.get("/getSpecialists",async(req,res)=>{
+  try{
+    const cid=req.query.cid;
+    const result=await child.findOne({idd:cid});
+    const specialests = result.sessions.map(session => session.specialest);
+    const specialestsSplit = specialests.flatMap(specialest => specialest.split(' '));
+
+    // Split first names and last names
+    const firstNames = specialestsSplit.filter((_, index) => index % 2 === 0);
+    const lastNames = specialestsSplit.filter((_, index) => index % 2 !== 0);
+
+    // Find specialests' ids based on first names and last names
+    const specialestsData = await specialestInfo.find({
+      firstName: { $in: firstNames },
+      lastName: { $in: lastNames }
+    }).select('firstName lastName idd');
+
+    console.log(specialests);
+    // console.log(specialestIds);
+   
+    
+
+    res.status(200).json(specialestsData);
+    
+  }catch(error){
+    res.status(500).json({ error: 'Internal Server Error' });
+    console.log(error);
   }
 });
 module.exports = app;
