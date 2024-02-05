@@ -43,9 +43,9 @@ app.post("/addSpecialestInfo",async(req,res)=>{
     console.log("added to check signup  "+check2);
 
     const newspName= new spNames({
-      Fname:firstName,
-      Lname:lastName,
-      id:idd
+      Fname:req.body.fname,
+      Lname:req.body.lname,
+      id:req.body.id
     });
     const savedName= await newspName.save();
     res.status(200).json(savedSp);
