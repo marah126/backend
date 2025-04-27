@@ -12,6 +12,7 @@ const fileChild=require("../models/fileChild");
 const checkSignup=require("../models/checkSignup");
 const childInfo = require('../models/childInfo');
 const specialestInfo = require('../models/specialestInfo');
+const note=require("../models/sessionNotes");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -443,6 +444,17 @@ app.get("/getSpecialists",async(req,res)=>{
 
     res.status(200).json(specialestsData);
     
+  }catch(error){
+    res.status(500).json({ error: 'Internal Server Error' });
+    console.log(error);
+  }
+});
+
+app.get("/getChildNote",async(req,res)=>{
+  try{
+    const id=req.query.id;
+    const notess= await note.find({idd:id});
+    res.status(200).json(notess);
   }catch(error){
     res.status(500).json({ error: 'Internal Server Error' });
     console.log(error);
